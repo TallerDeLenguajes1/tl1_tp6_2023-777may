@@ -16,12 +16,14 @@ void comprobarEstadoTareas(struct Tarea ** pendiente, struct Tarea ** hecho, int
 void mostrarAmbos(struct Tarea ** pendiente, struct Tarea ** hecho, int cant);
 void mostrarLista(struct Tarea ** lista, int cant);
 void mostrarTarea(struct Tarea * tarea);
+struct Tarea *BuscarTarea(struct Tarea ** pendiente, struct Tarea ** hecho, char * clave, int cant);
 
 
 
 void main ()
 {
     int cantidadTareas;
+    char clave[] = "ar";
     cantTareas(&cantidadTareas);
     struct Tarea ** TareasPendientes, ** TareasRealizadas;
     inicializar(&TareasPendientes, cantidadTareas);
@@ -29,6 +31,10 @@ void main ()
     cargarTareas(TareasPendientes, cantidadTareas);
     comprobarEstadoTareas(TareasPendientes, TareasRealizadas, cantidadTareas);
     mostrarAmbos(TareasPendientes, TareasRealizadas, cantidadTareas);
+
+    printf("\n\n Buscando la tarea con la palabra \"%s\"", clave);
+    mostrarTarea(BuscarTarea(TareasPendientes, TareasRealizadas, clave, cantidadTareas));
+    printf("\n ***");
 }
 
 
@@ -38,7 +44,6 @@ void cantTareas(int *nroTareas)
     printf("\nIngrese la cantidad de tareas a realizar: ");
     scanf("%d", nroTareas);
 }
-
 void inicializar(struct Tarea *** lista, int cant) 
 {
     *lista = malloc(sizeof(struct Tarea *)*cant);
@@ -84,7 +89,6 @@ void comprobarEstadoTareas(struct Tarea ** pendiente, struct Tarea ** hecho, int
         }
     }
 }
-
 void mostrarAmbos(struct Tarea ** pendiente, struct Tarea ** hecho, int cant)
 {
     printf("\n\nTareas Realizadas: ");
@@ -96,14 +100,34 @@ void mostrarLista(struct Tarea ** lista, int cant)
 {
     for (int i = 0; i < cant; i++)
     {
-        if (lista[i])
+        if (lista[i]){
             mostrarTarea(lista[i]);
+        }
     }
 }
 void mostrarTarea(struct Tarea * tarea)
 {
-    printf("\n  ID: %d",tarea->TareaID);
-    printf("\n  Descripcion: %s",tarea->Descripcion);
-    printf("\n  Duracion: %d",tarea->Duracion);
-    printf("\n---------------------------------------------------------------");
+    if (tarea)
+    {
+        printf("\n  ID: %d",tarea->TareaID);
+        printf("\n  Descripcion: %s",tarea->Descripcion);
+        printf("\n  Duracion: %d",tarea->Duracion);
+        printf("\n---------------------------------------------------------------");
+    }else{
+        printf("\nNo se ha encontrado la tarea");
+    }
+}
+struct Tarea *BuscarTarea(struct Tarea ** pendiente, struct Tarea ** hecho, char * clave, int cant){
+    for (int i = 0; i < cant; i++)
+    {
+        if (pendiente[i] && strstr(pendiente[i]->Descripcion, clave))
+        {
+            return pendiente[i];
+        }
+        if (hecho[i] && strstr(hecho[i]->Descripcion, clave))
+        {
+            return hecho[i];
+        }
+    }
+    return NULL;
 }
