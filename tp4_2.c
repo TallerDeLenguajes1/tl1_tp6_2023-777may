@@ -16,27 +16,60 @@ void comprobarEstadoTareas(struct Tarea ** pendiente, struct Tarea ** hecho, int
 void mostrarAmbos(struct Tarea ** pendiente, struct Tarea ** hecho, int cant);
 void mostrarLista(struct Tarea ** lista, int cant);
 void mostrarTarea(struct Tarea * tarea);
-struct Tarea *BuscarTarea(struct Tarea ** pendiente, struct Tarea ** hecho, char * clave, int cant);
+struct Tarea *BuscaTareaPorPalabra(struct Tarea ** pendiente, struct Tarea ** hecho, char * clave, int cant);
+struct Tarea *BuscaTareaPorId(struct Tarea ** pendiente, struct Tarea ** hecho, int id, int cant);
 
 
 
 void main ()
 {
-    int cantidadTareas;
+    int cantidadTareas, buscado, num=-1;
     char clave[] = "ar";
     cantTareas(&cantidadTareas);
     struct Tarea ** TareasPendientes, ** TareasRealizadas;
     inicializar(&TareasPendientes, cantidadTareas);
     inicializar(&TareasRealizadas, cantidadTareas);
     cargarTareas(TareasPendientes, cantidadTareas);
-    comprobarEstadoTareas(TareasPendientes, TareasRealizadas, cantidadTareas);
-    mostrarAmbos(TareasPendientes, TareasRealizadas, cantidadTareas);
+    while (num != 0)
+    {
+        switch (num)
+        {
+        case 1:
+            comprobarEstadoTareas(TareasPendientes, TareasRealizadas, cantidadTareas);
+            break;
+        case 2:
+            mostrarAmbos(TareasPendientes, TareasRealizadas, cantidadTareas);
+            break;
+        case 3:
+            printf("\nIngrese el ID a buscar: ");
+            scanf("%d", buscado);
+            printf("\nBuscando la tarea ID \"%d\": ", buscado);
+            mostrarTarea(BuscaTareaPorId(TareasPendientes, TareasRealizadas, buscado, cantidadTareas));
+            break;
+        case 4:
+            printf("\nIngrese la palabra a buscar: ");
+            scanf("%d", buscado);
+            printf("\n Buscando la tarea con la palabra \"%s\"", clave);
+            mostrarTarea(BuscaTareaPorPalabra(TareasPendientes, TareasRealizadas, clave, cantidadTareas));
+            break;
+        default:
+            printf("\nMENU");
+            printf("\n1: Cambiar estado de las tareas pendientes ");
+            printf("\n2: Listar las tareas ");
+            printf("\n3: Buscar tarea por ID ");
+            printf("\n4: Buscar tarea por palabra ");
+            printf("\n0: Salir ");
+            scanf("%d", num);
+            break;
+        }
+    }
 
-    printf("\n\n Buscando la tarea con la palabra \"%s\"", clave);
-    mostrarTarea(BuscarTarea(TareasPendientes, TareasRealizadas, clave, cantidadTareas));
-    printf("\n ***");
+    
+    
+
+    
+    
 }
-
 
 
 void cantTareas(int *nroTareas)
@@ -70,7 +103,7 @@ void cargarTareas(struct Tarea ** lista, int cant)
 }
 void comprobarEstadoTareas(struct Tarea ** pendiente, struct Tarea ** hecho, int cant)
 {
-    int positivo;
+    int positivo, bandera=0;
     for (int i = 0; i < cant; i++)
     {
         if (pendiente[i])
@@ -86,7 +119,11 @@ void comprobarEstadoTareas(struct Tarea ** pendiente, struct Tarea ** hecho, int
                 hecho[i] = pendiente[i];
                 pendiente[i] = NULL;
             }
+            bandera=1;
         }
+    }
+    if (bandera == 0){
+        printf("\nNo quedan tareas pendientes");
     }
 }
 void mostrarAmbos(struct Tarea ** pendiente, struct Tarea ** hecho, int cant)
@@ -117,7 +154,8 @@ void mostrarTarea(struct Tarea * tarea)
         printf("\nNo se ha encontrado la tarea");
     }
 }
-struct Tarea *BuscarTarea(struct Tarea ** pendiente, struct Tarea ** hecho, char * clave, int cant){
+struct Tarea *BuscaTareaPorPalabra(struct Tarea ** pendiente, struct Tarea ** hecho, char * clave, int cant)
+{
     for (int i = 0; i < cant; i++)
     {
         if (pendiente[i] && strstr(pendiente[i]->Descripcion, clave))
@@ -125,6 +163,20 @@ struct Tarea *BuscarTarea(struct Tarea ** pendiente, struct Tarea ** hecho, char
             return pendiente[i];
         }
         if (hecho[i] && strstr(hecho[i]->Descripcion, clave))
+        {
+            return hecho[i];
+        }
+    }
+}
+struct Tarea *BuscaTareaPorId(struct Tarea ** pendiente, struct Tarea ** hecho, int id, int cant)
+{
+    for (int i = 0; i < cant; i++)
+    {
+        if (pendiente[i] && pendiente[i]->TareaID == id)
+        {
+            return pendiente[i];
+        }
+        if (hecho[i] && hecho[i]->TareaID == id)
         {
             return hecho[i];
         }
