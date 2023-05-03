@@ -19,7 +19,7 @@ void mostrarTarea(struct Tarea * tarea);
 struct Tarea *BuscaTareaPorPalabra(struct Tarea ** pendiente, struct Tarea ** hecho, char * clave, int cant);
 struct Tarea *BuscaTareaPorId(struct Tarea ** pendiente, struct Tarea ** hecho, int id, int cant);
 int menu();
-void freeMemoria(struct Tarea ** pendiente, struct Tarea ** hecho, int cant);
+void freeMemoria(struct Tarea *** pendiente, struct Tarea *** hecho, int cant);
 
 
 
@@ -58,7 +58,7 @@ void main ()
         }
         num = menu();
     }
-    freeMemoria(TareasPendientes, TareasRealizadas, cantidadTareas);
+    freeMemoria(&TareasPendientes, &TareasRealizadas, cantidadTareas);
     
 }
 
@@ -195,21 +195,15 @@ int menu()
     scanf("%d", &num);
     return num;
 }
-void freeMemoria(struct Tarea ** pendiente, struct Tarea ** hecho, int cant)
+void freeMemoria(struct Tarea *** pendiente, struct Tarea *** hecho, int cant)
 {
     for (int i = 0; i < cant; i++)
     {
-        if (pendiente[i])
+        if ((*pendiente)[i])
         {
-            free(pendiente[i]->Descripcion);
-            free(pendiente[i]);
-        }
-        if (hecho[i])
-        {
-            free(hecho[i]->Descripcion);
-            free(hecho[i]);
+            free((*pendiente)[i]->Descripcion);
+            free((*pendiente)[i]);
         }
     }
-    free(pendiente);    
-    free(hecho);    
+    free(*pendiente);    
 }
