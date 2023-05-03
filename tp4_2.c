@@ -16,14 +16,12 @@ void comprobarEstadoTareas(struct Tarea ** pendiente, struct Tarea ** hecho, int
 void mostrarAmbos(struct Tarea ** pendiente, struct Tarea ** hecho, int cant);
 void mostrarLista(struct Tarea ** lista, int cant);
 void mostrarTarea(struct Tarea * tarea);
-struct Tarea *BuscarTarea(struct Tarea ** lista, int id, int cant);
-
 
 
 
 void main ()
 {
-    int cantidadTareas, buscado=1;
+    int cantidadTareas;
     cantTareas(&cantidadTareas);
     struct Tarea ** TareasPendientes, ** TareasRealizadas;
     inicializar(&TareasPendientes, cantidadTareas);
@@ -31,8 +29,6 @@ void main ()
     cargarTareas(TareasPendientes, cantidadTareas);
     comprobarEstadoTareas(TareasPendientes, TareasRealizadas, cantidadTareas);
     mostrarAmbos(TareasPendientes, TareasRealizadas, cantidadTareas);
-    printf("\nBusco la tarea %d en Tareas Pendientes", buscado);
-    mostrarTarea(BuscarTarea(TareasPendientes, buscado, cantidadTareas));
 }
 
 
@@ -110,12 +106,4 @@ void mostrarTarea(struct Tarea * tarea)
     printf("\n  Descripcion: %s",tarea->Descripcion);
     printf("\n  Duracion: %d",tarea->Duracion);
     printf("\n---------------------------------------------------------------");
-}
-struct Tarea *BuscarTarea(struct Tarea ** lista, int id, int cant){
-    for (int i = 0; i < cant; i++)
-    {
-        if (lista[i]->TareaID == id)
-            return lista[i];
-    }
-    return NULL;
 }
