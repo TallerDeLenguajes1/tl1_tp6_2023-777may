@@ -14,22 +14,23 @@ void inicializar(struct Tarea *** lista, int cant);
 void cargarTareas(struct Tarea ** lista, int cant);
 void comprobarEstadoTareas(struct Tarea ** pendiente, struct Tarea ** hecho, int cant);
 void mostrarAmbos(struct Tarea ** pendiente, struct Tarea ** hecho, int cant);
-void mostrarLista(struct Tarea ** lista, int cant);
+void mostrarLista(struct Tarea ** lista, int cant, char texto[]);
 void mostrarTarea(struct Tarea * tarea);
 struct Tarea *BuscaTareaPorPalabra(struct Tarea ** pendiente, struct Tarea ** hecho, char * clave, int cant);
 struct Tarea *BuscaTareaPorId(struct Tarea ** pendiente, struct Tarea ** hecho, int id, int cant);
-
+int menu();
 
 
 void main ()
 {
-    int cantidadTareas, buscado, num=-1;
-    char clave[] = "ar";
+    int cantidadTareas, buscado, num;
+    char clave[100];
     cantTareas(&cantidadTareas);
     struct Tarea ** TareasPendientes, ** TareasRealizadas;
     inicializar(&TareasPendientes, cantidadTareas);
     inicializar(&TareasRealizadas, cantidadTareas);
     cargarTareas(TareasPendientes, cantidadTareas);
+    num = menu();
     while (num != 0)
     {
         switch (num)
@@ -42,26 +43,18 @@ void main ()
             break;
         case 3:
             printf("\nIngrese el ID a buscar: ");
-            scanf("%d", buscado);
+            scanf("%d", &buscado);
             printf("\nBuscando la tarea ID \"%d\": ", buscado);
             mostrarTarea(BuscaTareaPorId(TareasPendientes, TareasRealizadas, buscado, cantidadTareas));
             break;
         case 4:
             printf("\nIngrese la palabra a buscar: ");
-            scanf("%d", buscado);
+            scanf("%s", clave);
             printf("\n Buscando la tarea con la palabra \"%s\"", clave);
             mostrarTarea(BuscaTareaPorPalabra(TareasPendientes, TareasRealizadas, clave, cantidadTareas));
             break;
-        default:
-            printf("\nMENU");
-            printf("\n1: Cambiar estado de las tareas pendientes ");
-            printf("\n2: Listar las tareas ");
-            printf("\n3: Buscar tarea por ID ");
-            printf("\n4: Buscar tarea por palabra ");
-            printf("\n0: Salir ");
-            scanf("%d", num);
-            break;
         }
+        num = menu();
     }
 
     
@@ -94,7 +87,10 @@ void cargarTareas(struct Tarea ** lista, int cant)
         lista[i] = malloc(sizeof(struct Tarea));
         lista[i]->TareaID = i;
         printf("\nIngrese la descripcion de la tarea %d :", i+1);
-        scanf("%s", texto);
+        // scanf("%s", texto);
+        fflush(stdin);
+        gets( texto);
+        fflush(stdin);
         lista[i]->Descripcion = malloc(sizeof(char)*(strlen(texto)+1));
         strcpy(lista[i]->Descripcion, texto);
         lista[i]->Duracion = 10 + rand()%91;
@@ -123,23 +119,29 @@ void comprobarEstadoTareas(struct Tarea ** pendiente, struct Tarea ** hecho, int
         }
     }
     if (bandera == 0){
-        printf("\nNo quedan tareas pendientes");
+        printf("\n  No quedan tareas pendientes\n");
     }
 }
 void mostrarAmbos(struct Tarea ** pendiente, struct Tarea ** hecho, int cant)
 {
-    printf("\n\nTareas Realizadas: ");
-    mostrarLista(hecho, cant);
-    printf("\n\nTareas Pendientes: ");
-    mostrarLista(pendiente, cant);
+    mostrarLista(hecho, cant, "Realizadas");
+    mostrarLista(pendiente, cant, "Pendientes");
 }
-void mostrarLista(struct Tarea ** lista, int cant)
+void mostrarLista(struct Tarea ** lista, int cant, char texto[])
 {
+    int bandera=0;
+    printf("\n\nTareas %s: ", texto);
     for (int i = 0; i < cant; i++)
     {
         if (lista[i]){
             mostrarTarea(lista[i]);
+            bandera = 1;
         }
+    }
+
+    if (bandera == 0)
+    {
+        printf("\n    No hay tareas %s \n", texto);
     }
 }
 void mostrarTarea(struct Tarea * tarea)
@@ -151,7 +153,7 @@ void mostrarTarea(struct Tarea * tarea)
         printf("\n  Duracion: %d",tarea->Duracion);
         printf("\n---------------------------------------------------------------");
     }else{
-        printf("\nNo se ha encontrado la tarea");
+        printf("\n    No se ha encontrado la tarea\n");
     }
 }
 struct Tarea *BuscaTareaPorPalabra(struct Tarea ** pendiente, struct Tarea ** hecho, char * clave, int cant)
@@ -167,6 +169,7 @@ struct Tarea *BuscaTareaPorPalabra(struct Tarea ** pendiente, struct Tarea ** he
             return hecho[i];
         }
     }
+    return NULL;
 }
 struct Tarea *BuscaTareaPorId(struct Tarea ** pendiente, struct Tarea ** hecho, int id, int cant)
 {
@@ -182,4 +185,16 @@ struct Tarea *BuscaTareaPorId(struct Tarea ** pendiente, struct Tarea ** hecho, 
         }
     }
     return NULL;
+}
+int menu()
+{
+    int num;
+    printf("\nMENU");
+    printf("\n1: Cambiar estado de las tareas pendientes ");
+    printf("\n2: Listar las tareas ");
+    printf("\n3: Buscar tarea por ID ");
+    printf("\n4: Buscar tarea por palabra ");
+    printf("\n0: Salir \n");
+    scanf("%d", &num);
+    return num;
 }
