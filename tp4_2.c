@@ -7,19 +7,24 @@ struct Tarea {
     int TareaID; //Numerado en ciclo iterativo
     char *Descripcion;
     int Duracion; // entre 10 – 100
-};
+}typedef Tarea;
+struct Nodo{
+    Tarea T;
+    Nodo *Siguiente;
+}typedef Nodo;
 
-void cantTareas(int *nroTareas);
-void inicializar(struct Tarea *** lista, int cant);
-void cargarTareas(struct Tarea ** lista, int cant);
-void comprobarEstadoTareas(struct Tarea ** pendiente, struct Tarea ** hecho, int cant);
-void mostrarAmbos(struct Tarea ** pendiente, struct Tarea ** hecho, int cant);
-void mostrarLista(struct Tarea ** lista, int cant, char texto[]);
-void mostrarTarea(struct Tarea * tarea);
-struct Tarea *BuscaTareaPorPalabra(struct Tarea ** pendiente, struct Tarea ** hecho, char * clave, int cant);
-struct Tarea *BuscaTareaPorId(struct Tarea ** pendiente, struct Tarea ** hecho, int id, int cant);
+
+void inicializar(Nodo ** lista);
+void cargarTareas(Nodo ** lista);
+
+void comprobarEstadoTareas(Nodo ** pendiente, Nodo ** hecho);
+void mostrarAmbos(Tarea * pendiente, Tarea * hecho);
+void mostrarLista(Tarea * lista, char texto[]);
+void mostrarTarea(Tarea * tarea);
+Tarea *BuscaTareaPorPalabra(Tarea ** pendiente, Tarea ** hecho, char * clave, int cant);
+Tarea *BuscaTareaPorId(Tarea ** pendiente, Tarea ** hecho, int id, int cant);
 int menu();
-void freeMemoria(struct Tarea *** pendiente, struct Tarea *** hecho, int cant);
+void freeMemoria(Tarea *** pendiente, Tarea *** hecho, int cant);
 
 
 
@@ -27,21 +32,24 @@ void main ()
 {
     int cantidadTareas, buscado, num;
     char clave[100];
-    cantTareas(&cantidadTareas);
-    struct Tarea ** TareasPendientes, ** TareasRealizadas;
-    inicializar(&TareasPendientes, cantidadTareas);
-    inicializar(&TareasRealizadas, cantidadTareas);
-    cargarTareas(TareasPendientes, cantidadTareas);
+
+    Nodo *TareasPendientes, *TareasRealizadas;
+
+    inicializar(&TareasPendientes);
+    inicializar(&TareasRealizadas);
+
+    cargarTareas(&TareasPendientes);
+
     num = menu();
     while (num != 0)
     {
         switch (num)
         {
         case 1:
-            comprobarEstadoTareas(TareasPendientes, TareasRealizadas, cantidadTareas);
+            comprobarEstadoTareas(&TareasPendientes, &TareasRealizadas);
             break;
         case 2:
-            mostrarAmbos(TareasPendientes, TareasRealizadas, cantidadTareas);
+            mostrarAmbos(TareasPendientes, TareasRealizadas);
             break;
         case 3:
             printf("\nIngrese el ID a buscar: ");
@@ -63,85 +71,85 @@ void main ()
 }
 
 
-void cantTareas(int *nroTareas)
+
+void inicializar(Nodo **lista) 
 {
-    printf("\nIngrese la cantidad de tareas a realizar: ");
-    scanf("%d", nroTareas);
+    *lista = NULL;
 }
-void inicializar(struct Tarea *** lista, int cant) 
+
+void cargarTareas(Nodo ** lista)
 {
-    *lista = malloc(sizeof(struct Tarea *)*cant);
-    for (int i = 0; i < cant; i++)
-    {
-        (*lista)[i] = NULL;
-    } 
-}
-void cargarTareas(struct Tarea ** lista, int cant)
-{
+    Nodo *nuevo;
     char *texto = malloc(sizeof(char)*100);
     srand(time(NULL));
-    for (int i = 0; i < cant; i++)
+    nuevo = malloc(sizeof(Nodo));
+    if (!(*lista))
     {
-        lista[i] = malloc(sizeof(struct Tarea));
-        lista[i]->TareaID = i;
-        printf("\nIngrese la descripcion de la tarea %d :", i+1);
-        fflush(stdin);
-        gets( texto);
-        fflush(stdin);
-        lista[i]->Descripcion = malloc(sizeof(char)*(strlen(texto)+1));
-        strcpy(lista[i]->Descripcion, texto);
-        lista[i]->Duracion = 10 + rand()%91;
+        nuevo->T.TareaID = 0;
+    }else{
+        nuevo->T.TareaID = (*lista)->T.TareaID +1;
     }
+    printf("\nIngrese la descripcion de la nueva tarea :");
+    fflush(stdin);
+    gets(texto);
+    fflush(stdin);
+    nuevo->T.Descripcion = malloc(sizeof(char)*(strlen(texto)+1));
+    strcpy(nuevo->T.Descripcion, texto);
+    nuevo->T.Duracion = 10 + rand()%91;
+    nuevo->Siguiente = *lista;
+    *lista = nuevo;
     free(texto);
 }
-void comprobarEstadoTareas(struct Tarea ** pendiente, struct Tarea ** hecho, int cant)
+void comprobarEstadoTareas(Nodo ** pendiente, Nodo ** hecho)
 {
-    int positivo, bandera=0;
-    for (int i = 0; i < cant; i++)
-    {
-        if (pendiente[i])
-        {
-            printf("\nHa realizado la tarea %d: \"%s\"? \n", pendiente[i]->TareaID, pendiente[i]->Descripcion);
-            do
-            {
-                printf(" 1: SI \n 0: NO \n" );
-                scanf("%d", &positivo);
-            } while (positivo!= 1 && positivo!= 0);
-            if (positivo)
-            {
-                hecho[i] = pendiente[i];
-                pendiente[i] = NULL;
-            }
-            bandera=1;
-        }
-    }
-    if (bandera == 0){
+    int respuesta;
+    Nodo *aux = *pendiente, *anterior = *pendiente;
+    if (!*pendiente){
         printf("\n  No quedan tareas pendientes\n");
     }
-}
-void mostrarAmbos(struct Tarea ** pendiente, struct Tarea ** hecho, int cant)
-{
-    mostrarLista(hecho, cant, "Realizadas");
-    mostrarLista(pendiente, cant, "Pendientes");
-}
-void mostrarLista(struct Tarea ** lista, int cant, char texto[])
-{
-    int bandera=0;
-    printf("\n\nTareas %s: ", texto);
-    for (int i = 0; i < cant; i++)
+    while (aux)
     {
-        if (lista[i]){
-            mostrarTarea(lista[i]);
-            bandera = 1;
+        printf("\nHa realizado la tarea %d: \"%s\"? \n", (*pendiente)->T.TareaID, (*pendiente)->T.Duracion);
+        do
+        {
+            printf(" 1: SI \n 0: NO \n" );
+            scanf("%d", &respuesta);
+        } while (respuesta!= 1 && respuesta!= 0);
+        if (respuesta)
+        {
+            if (!aux->Siguiente)
+            {
+                *pendiente = aux->Siguiente;
+            }else{
+                anterior->Siguiente = aux->Siguiente;
+            }
+            aux->Siguiente = *hecho;
+            *hecho = aux;
+            aux = anterior->Siguiente;
         }
     }
-
-    if (bandera == 0)
+}
+void mostrarAmbos(Tarea * pendiente, Tarea * hecho)
+{
+    mostrarLista(hecho, "Realizadas");
+    mostrarLista(pendiente, "Pendientes");
+}
+void mostrarLista(Tarea * lista, char texto[])
+{
+    printf("\n\nTareas %s: ", texto);
+    if (!lista)
     {
         printf("\n    No hay tareas %s \n", texto);
     }
+    while(lista)
+    {
+        mostrarTarea(lista);
+        lista = 
+    }
+
+    
 }
-void mostrarTarea(struct Tarea * tarea)
+void mostrarTarea(Tarea * tarea)
 {
     if (tarea)
     {
@@ -153,7 +161,7 @@ void mostrarTarea(struct Tarea * tarea)
         printf("\n    No se ha encontrado la tarea\n");
     }
 }
-struct Tarea *BuscaTareaPorPalabra(struct Tarea ** pendiente, struct Tarea ** hecho, char * clave, int cant)
+Tarea *BuscaTareaPorPalabra(Tarea ** pendiente, Tarea ** hecho, char * clave, int cant)
 {
     for (int i = 0; i < cant; i++)
     {
@@ -168,7 +176,7 @@ struct Tarea *BuscaTareaPorPalabra(struct Tarea ** pendiente, struct Tarea ** he
     }
     return NULL;
 }
-struct Tarea *BuscaTareaPorId(struct Tarea ** pendiente, struct Tarea ** hecho, int id, int cant)
+Tarea *BuscaTareaPorId(Tarea ** pendiente, Tarea ** hecho, int id, int cant)
 {
     for (int i = 0; i < cant; i++)
     {
@@ -195,7 +203,7 @@ int menu()
     scanf("%d", &num);
     return num;
 }
-void freeMemoria(struct Tarea *** pendiente, struct Tarea *** hecho, int cant)
+void freeMemoria(Tarea *** pendiente, Tarea *** hecho, int cant)
 {
     for (int i = 0; i < cant; i++)
     {
