@@ -27,13 +27,13 @@
 // }
 
 int num = 1, resultado=0, a, b;
-while(num >= 1){
-    Console.WriteLine("Ingrese una opción: \n  1: Suma \n  2: Resta \n  3: Multiplicacion \n  4: Division");
+while(num == 1){
+    Console.WriteLine("\nIngrese una opción: \n  1: Suma \n  2: Resta \n  3: Multiplicacion \n  4: Division");
     bool control = int.TryParse(Console.ReadLine(), out num);
     if (control){
-        Console.WriteLine("Ingrese el 1er numero: ");
+        Console.WriteLine("\nIngrese el 1er numero: ");
         bool controlA = int.TryParse(Console.ReadLine(), out a);
-        Console.WriteLine("Ingrese el 2do numero: ");
+        Console.WriteLine("\nIngrese el 2do numero: ");
         bool controlB = int.TryParse(Console.ReadLine(), out b);
         if (controlA && controlB){
             switch(num){
@@ -51,15 +51,21 @@ while(num >= 1){
                         resultado = a/b;
                     }else{
                         resultado = 0;
-                        Console.WriteLine("No se puede dividir en 0");
+                        Console.WriteLine("\nNo se puede dividir en 0");
                     }
                     break;
             }
-            Console.WriteLine("El resultado es: \n\n" + resultado);
+            Console.WriteLine("\nEl resultado es: " + resultado + "\n");
+        }else{
+            Console.WriteLine("\nNo ha ingresado un numero");
         }
     }else{
-        Console.WriteLine("No ha ingresado una opcion valida");
+        Console.WriteLine("\nNo ha ingresado una opcion valida");
         num = 1;
     }
+    do{
+        Console.WriteLine("\nDesea realizar otro calculo?: \n  1:Si \n  0: No");
+        control = int.TryParse(Console.ReadLine(), out num);
+    }while(!control || num != 1 && num != 0);
 }
 //dotnet run
