@@ -25,47 +25,92 @@
 // }else{
 //     Console.WriteLine("No ha ingresado un num");
 // }
-
-int num = 1, resultado=0, a, b;
-while(num == 1){
-    Console.WriteLine("\nIngrese una opción: \n  1: Suma \n  2: Resta \n  3: Multiplicacion \n  4: Division");
-    bool control = int.TryParse(Console.ReadLine(), out num);
-    if (control){
-        Console.WriteLine("\nIngrese el 1er numero: ");
-        bool controlA = int.TryParse(Console.ReadLine(), out a);
-        Console.WriteLine("\nIngrese el 2do numero: ");
-        bool controlB = int.TryParse(Console.ReadLine(), out b);
-        if (controlA && controlB){
-            switch(num){
-                case 1: 
-                    resultado = a + b;
-                    break;
-                case 2:
-                    resultado = a - b;
-                    break;
-                case 3: 
-                    resultado = a * b;
-                    break;
-                case 4: 
-                    if(b != 0){
-                        resultado = a/b;
-                    }else{
-                        resultado = 0;
-                        Console.WriteLine("\nNo se puede dividir en 0");
-                    }
-                    break;
-            }
-            Console.WriteLine("\nEl resultado es: " + resultado + "\n");
-        }else{
-            Console.WriteLine("\nNo ha ingresado un numero");
-        }
-    }else{
-        Console.WriteLine("\nNo ha ingresado una opcion valida");
-        num = 1;
+double solicitarDouble(string txt){
+    bool esNumero = false;
+    double numero = 0;
+    while (!esNumero){
+        Console.WriteLine(txt);
+        esNumero = double.TryParse(Console.ReadLine(), out numero);
     }
-    do{
-        Console.WriteLine("\nDesea realizar otro calculo?: \n  1:Si \n  0: No");
-        control = int.TryParse(Console.ReadLine(), out num);
-    }while(!control || num != 1 && num != 0);
+    return numero;
 }
-//dotnet run
+float solicitarFloat(string txt){
+    bool esNumero = false;
+    float numero = 0;
+    while (!esNumero){
+        Console.WriteLine(txt);
+        esNumero = float.TryParse(Console.ReadLine(), out numero);
+    }
+    return numero;
+}
+
+double opcion = 1, resultado = 0, a = 0 , b = 0;
+float flotante = 0;
+
+while(opcion == 1){
+    do{
+        opcion = solicitarDouble("\nIngrese una opción: \n  1: Suma \n  2: Resta \n  3: Multiplicacion \n  4: Division \n  5: Valor Absoluto \n  6: Cuadrado \n  7: Raiz cuadrada \n  8: Seno \n  9: Coseno \n  10: La parte entera del numero");
+    }while(opcion > 10 || opcion < 1);
+
+    if(opcion < 5){
+        a = solicitarDouble("\nIngrese el 1er numero: ");
+        b = solicitarDouble("\nIngrese el 2do numero: ");
+    }else if (opcion == 10){
+        flotante = solicitarFloat("\nIngrese el numero a operar: \n(use \",\" para los decimales)");
+    }else{
+        a = solicitarDouble("\nIngrese el numero a operar: ");
+    }
+
+    switch(opcion){
+        case 1: 
+            resultado = a + b;
+            break;
+        case 2:
+            resultado = a - b;
+            break;
+        case 3: 
+            resultado = a * b;
+            break;
+        case 4: 
+            if(b != 0){
+                resultado = a/b;
+            }else{
+                resultado = 0;
+                Console.WriteLine("\nNo se puede dividir en 0");
+            }
+            break;
+        case 5:
+            resultado = Math.Abs(a);
+            break;
+        case 6:
+            resultado = Math.Pow(a, 2);
+            break;
+        case 7:
+            resultado = Math.Sqrt(a);
+            break;
+        case 8:
+            a = a*Math.PI/180;//porque las funciones trigonométricas usan radianes
+            resultado = Math.Sin(a);
+            break;
+        case 9:
+            a = a*Math.PI/180;//porque las funciones trigonométricas usan radianes
+            resultado = Math.Cos(a);
+            break;
+        case 10:
+            resultado = Math.Round(flotante);
+            break;
+    }
+    Console.WriteLine("\nEl resultado es: " + resultado + "\n");
+
+    do{
+        opcion = solicitarDouble("\nDesea realizar otro calculo?: \n  1:Si \n  0: No");
+    }while(opcion != 1 && opcion != 0);
+}
+
+Console.WriteLine("\nIngrese dos numeros a comparar:");
+a = solicitarDouble("\nIngrese el primer numero: ");
+b = solicitarDouble("\nIngrese el segundo numero: ");
+Console.WriteLine("\n El maximo entre el 1er numero (" + a + ") y 2do numero (" + b + ") es:  " + Math.Max(a, b));
+Console.WriteLine("\n El minimo entre el 1er numero (" + a + ") y 2do numero (" + b + ") es:  " + Math.Min(a, b));
+
+// //dotnet run
