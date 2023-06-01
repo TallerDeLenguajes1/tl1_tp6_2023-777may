@@ -26,58 +26,70 @@
 //     Console.WriteLine("No ha ingresado un num");
 // }
 
-bool solicitarNumero(double numero){
-    return double.TryParse(Console.ReadLine(), out numero);
+double solicitarDouble(string txt){
+    bool esNumero = false;
+    double numero = 0;
+    while (!esNumero){
+        Console.WriteLine(txt);
+        esNumero = double.TryParse(Console.ReadLine(), out numero);
+    }
+    return numero;
 }
+float solicitarFloat(string txt){
+    bool esNumero = false;
+    float numero = 0;
+    while (!esNumero){
+        Console.WriteLine(txt);
+        esNumero = float.TryParse(Console.ReadLine(), out numero);
+    }
+    return numero;
+}
+double opcion=1, numero = 0, resultado = 0;
+float flotante = 0;
 
-int opcion=1;
-double numero = 0, resultado = 0;
+while(opcion > 0){
+    do
+    {
+        opcion = solicitarDouble("\nIngrese una operacion: \n  1: Valor Absoluto \n  2: Cuadrado \n  3: Raiz cuadrada \n  4: Seno \n  5: Coseno \n  6: La parte entera del numero \n  0: Salir");
+    }while(opcion > 6 || opcion < 0);
+    if (opcion != 0){
+        if(opcion == 6){
+            flotante = solicitarFloat("\nIngrese el numero a operar: \n(use \",\" para los decimales)");
+            Console.WriteLine("El num es: " + flotante);
+        }else{
+            numero = solicitarDouble("\nIngrese el numero a operar: ");
+        }
 
-// while(opcion > 0){
-    bool esOpcion = false, esNumero = false;
+        switch(opcion){
+            case 1:
+                resultado = Math.Abs(numero);
+                break;
+            case 2:
+                resultado = Math.Pow(numero, 2);
+                break;
+            case 3:
+                resultado = Math.Sqrt(numero);
+                break;
+            case 4:
+                numero = numero*Math.PI/180;//porque las funciones trigonométricas usan radianes
+                resultado = Math.Sin(numero);
+                break;
+            case 5:
+                numero = numero*Math.PI/180;//porque las funciones trigonométricas usan radianes
+                resultado = Math.Cos(numero);
+                break;
+            case 6:
+                resultado = Math.Round(flotante);
+                break;
+        }
+        Console.WriteLine("\nEl resultado es: " + resultado);
+    }
+}
+double num1 = 0, num2 = 0;
+Console.WriteLine("\nIngrese dos numeros a comparar:");
+num1 = solicitarDouble("\nIngrese el primer numero: ");
+num2 = solicitarDouble("\nIngrese el segundo numero: ");
+Console.WriteLine("\n El maximo entre num1 (" + num1 + ") y num2 (" + num2 + ") es:  " + Math.Max(num1, num2));
+Console.WriteLine("\n El minimo entre num1 (" + num1 + ") y num2 (" + num2 + ") es:  " + Math.Min(num1, num2));
 
-    Console.WriteLine("Ingrese un num: ");
-    esNumero = solicitarNumero(&numero);
-    Console.WriteLine("El num es: " + numero);
-
-    // while(!esOpcion || opcion > 6 || opcion < 1){
-    //     if (opcion != 1){
-    //         Console.WriteLine("\nHa ingresado un valor incorrecto");
-    //     }
-//         Console.WriteLine("\nIngrese una operacion: \n  1: Valor Absoluto \n  2: Cuadrado \n  3: Raiz cuadrada \n  4: Seno \n  5: Coseno \n  6: La parte entera del numero");
-//         esOpcion = solicitarNumero(opcion);
-//     }
-//     while(!esNumero){
-//         Console.WriteLine("\nIngrese el numero a operar: ");
-//         esNumero = solicitarNumero(numero);
-//     }
-
-//     switch(opcion){
-//         case 1:
-//             resultado = Math.Abs(numero);
-//             break;
-//         case 2:
-//             resultado = Math.Pow(numero, 2);
-//             break;
-//         case 3:
-//             resultado = Math.Sqrt(numero);
-//             break;
-//         case 4:
-//             numero = numero*Math.PI/180;//porque las funciones trigonométricas usan radianes
-//             resultado = Math.Sin(numero);
-//             break;
-//         case 5:
-//             numero = numero*Math.PI/180;//porque las funciones trigonométricas usan radianes
-//             resultado = Math.Cos(numero);
-//             break;
-//         case 6:
-//             resultado = Math.Round(numero);
-//             break;
-//     }
-//     Console.WriteLine("\nEl resultado es: " + resultado);
-// }
-
-// solicite dos números al usuario y determine:
-// ● El Máximo entre los dos números
-// ● El Mínimo entre los dos números
 // //dotnet run
